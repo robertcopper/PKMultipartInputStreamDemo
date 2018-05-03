@@ -51,6 +51,7 @@
 		47955C87209A15880072E61A = {
 			isa = PBXGroup;
 			children = (
+				47955CA5209A15C80072E61A /* README.md */,
 				47955C92209A15880072E61A /* PKMultipartInputStreamDemo */,
 				47955C91209A15880072E61A /* Products */,
 			);
@@ -74,7 +75,6 @@
 				47955C9A209A158A0072E61A /* Assets.xcassets */,
 				47955C9C209A158A0072E61A /* LaunchScreen.storyboard */,
 				47955C9F209A158A0072E61A /* Info.plist */,
-				47955CA5209A15C80072E61A /* README.md */,
 				47955CAA209A1EBB0072E61A /* PKMultipartInputStream */,
 				47955CA6209A1E980072E61A /* PKMultipartInputStreamDemo-Bridging-Header.h */,
 			);
