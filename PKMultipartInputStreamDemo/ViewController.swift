@@ -15,6 +15,7 @@ class ViewController: UIViewController {
     fileprivate var request: URLRequest?
     fileprivate var task: URLSessionTask?
     fileprivate var accumulated = Data()
+    fileprivate var httpResponse: HTTPURLResponse?
 
     @IBOutlet weak var secure: UISwitch?
     @IBOutlet weak var urlText: UITextField?
@@ -137,7 +138,7 @@ extension ViewController {
         var request = URLRequest(url: url)
         let contentType = "multipart/form-data; boundary=" + boundary
         request.setValue(contentType, forHTTPHeaderField: "Content-Type")
-        request.setValue("\(length)", forHTTPHeaderField: "Content-Length")
+        request.setValue(String(length), forHTTPHeaderField: "Content-Length")
         request.httpMethod = "POST"
 
         return request
@@ -155,7 +156,6 @@ extension ViewController: URLSessionTaskDelegate {
 
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
 
-        NSLog("data chunk: %@", data as NSData)
         self.accumulated.append(data)
     }
 
@@ -170,7 +170,27 @@ extension ViewController: URLSessionTaskDelegate {
                 self.errorMessage?.text = error.localizedDescription
             }
 
-            self.response?.text = String(data: self.accumulated, encoding: .utf8)
+            var responseString = ""
+            if let response = self.httpResponse {
+
+                let headers = response.allHeaderFields
+                for (key,value) in headers {
+
+                    let keyString = key as? String ?? "unknown key type"
+                    let valueString = value as? String ?? "unknown value type"
+
+                    responseString += keyString + ": " + valueString + "\r\n"
+                }
+
+                responseString += String(response.statusCode) + ": "
+                responseString += HTTPURLResponse.localizedString(forStatusCode: response.statusCode)
+
+            } else {
+
+                responseString = String(data: self.accumulated, encoding: .utf8) ?? "no response accumulated"
+            }
+
+            self.response?.text = responseString
         }
     }
 
@@ -189,6 +209,8 @@ extension ViewController: URLSessionTaskDelegate {
 extension ViewController: URLSessionDataDelegate {
 
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
+
+        self.httpResponse = response as? HTTPURLResponse
 
         completionHandler(.allow)
     }
